@@ -1,0 +1,22 @@
+#pragma once
+#include "includes.hpp"
+
+class Entity
+{
+public:
+	Entity() = default;
+	Entity(const sf::Texture& texture,const sf::Vector2i& position = { 500,500 });
+	Entity(const Entity& object) = delete;
+
+	void init(const sf::Texture& texture, const sf::Vector2i& position = { 500,500 });
+	void move();
+	void draw(sf::RenderWindow& window)const;
+
+	void set_position(const sf::Vector2f& position);
+	const sf::Vector2f& get_position()const;
+
+
+protected:
+	sf::Sprite m_sprite;
+};
+
