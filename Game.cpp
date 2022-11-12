@@ -4,6 +4,9 @@ Game::Game(){
 	m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "DeepInAbyss");
     m_window.setFramerateLimit(120);
     m_player.init(Texture_Manager::get_texture(S_CHARACTER_PATH));
+    m_back_ground.setTexture(Texture_Manager::get_texture(S_BACK_GROUND_PATH));
+    m_back_ground.setPosition({ 0,0 });
+    m_spear = nullptr;
     srand(time(0));
 }
 void Game::Spawn_Enemies(const int& amount) {
@@ -20,6 +23,20 @@ void Game::Draw_Enemies() {
         enemie.draw(m_window);
     }
 }
+void Game::Draw_Spear() {
+    if (m_spear == nullptr) return;
+    m_spear->draw(m_window);
+}
+bool Game::Is_Spear_Inbounds() {
+    if (m_spear == nullptr) return true;
+    sf::Vector2f spear_position = m_spear->get_position();
+    if (spear_position.x > 0 && spear_position.x < 1000 &&
+        spear_position.y > 0 && spear_position.y < 1000)
+    {
+        return true;
+    }
+    return false;
+}
 void Game::Run() {
     while (m_window.isOpen())
     {
@@ -29,6 +46,15 @@ void Game::Run() {
         {
             if (event.type == sf::Event::Closed)
                 m_window.close();
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && m_spear == nullptr) {
+                    m_spear = new Spear(m_player.get_position());
+                    m_spear->set_intial_mouse_pos(m_window);
+                }
+            }
+            if (event.type == sf::Event::MouseButtonReleased) {
+                m_spear->set_velocity(sf::Mouse::getPosition(m_window));
+            }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             m_player.move(Direction::LEFT,delta_time);
@@ -36,10 +62,22 @@ void Game::Run() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             m_player.move(Direction::RIGHT,delta_time);
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+            Spawn_Enemies(1);
+        }
+        if (!(Is_Spear_Inbounds())) {
+            delete m_spear;
+            m_spear = nullptr;
+        }
+        if(m_spear != nullptr) {
+            m_spear->move(delta_time);
+        }
         
         m_window.clear();
+        m_window.draw(m_back_ground);
         m_player.draw(m_window);
         Draw_Enemies();
+        Draw_Spear();
         m_window.display();
     }
 }
