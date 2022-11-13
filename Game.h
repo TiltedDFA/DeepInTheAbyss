@@ -7,6 +7,7 @@
 #include "spear.h"
 #include "player.h"
 #include "Fish.h"
+#include <SFML/Audio.hpp>
 class Game
 {
 public:
@@ -27,6 +28,10 @@ public:
 
 	void Run();
 private:
+	sf::Sound m_menu_music;
+	sf::Sound m_game_music;
+	sf::Sound m_win_music;
+	sf::Sound m_lose_music;
 	sf::RenderWindow m_window;
 	Texture_Manager m_texture_manager{};
 	std::vector<Fish*> m_enemies;

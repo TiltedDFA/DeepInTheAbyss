@@ -6,6 +6,10 @@ Game::Game(){
     m_back_ground.setTexture(Texture_Manager::get_texture(S_BACK_GROUND_PATH));
     m_back_ground.setPosition({ 0,0 });
     m_num_clock_resets = 0;
+    m_menu_music.setBuffer(Texture_Manager::get_sound_buffer(MENU_MUSIC_PATH));
+    m_game_music.setBuffer(Texture_Manager::get_sound_buffer(GAME_MUSIC_PATH));
+    m_win_music.setBuffer(Texture_Manager::get_sound_buffer(WIN_MUSIC_PATH));
+    m_lose_music.setBuffer(Texture_Manager::get_sound_buffer(LOSE_MUSIC_PATH));
     m_spear = nullptr;
     srand(time(0));
 }
@@ -149,7 +153,7 @@ void Game::Run_Title_Screen() {
     title.setOutlineThickness(5);
     title.setPosition({ 10,100 });
     title.setString("Deep In The Abyss");
-
+    m_menu_music.play();
     bool button_pressed = false;
     while (m_window.isOpen()) {
         
@@ -167,7 +171,11 @@ void Game::Run_Title_Screen() {
                 }
             }
         }
-        if (button_pressed) break;
+        if (button_pressed)
+        {
+            m_menu_music.stop();
+            break;
+        }
         m_window.clear();
         m_window.draw(back_ground);
         m_window.draw(title_backing);
@@ -178,6 +186,7 @@ void Game::Run_Title_Screen() {
     }
 }
 void Game::Run_Lose_Screen() {
+    m_lose_music.play();
     while (m_window.isOpen()) {
         sf::RectangleShape back_ground;
         sf::Text lose_text;
@@ -210,7 +219,7 @@ void Game::Run_Lose_Screen() {
     }
 }
 void Game::Run_Win_Screen() {
-   
+    m_win_music.play();
     while (m_window.isOpen()) {
         sf::RectangleShape back_ground;
         sf::Text win_text;
@@ -243,6 +252,7 @@ void Game::Run_Win_Screen() {
 }
 void Game::Run_Main_Loop() {
     m_game_time.restart();
+    m_game_music.play();
     while (m_window.isOpen())
     {
         sf::Time delta_time = m_clock.restart();
@@ -287,9 +297,11 @@ void Game::Run_Main_Loop() {
             Spawn_Enemies();
         }
         if (m_player.get_position().y <= 0) {
+            m_game_music.stop();
             Run_Win_Screen();
         }
         if (Enemie_Collides_With_Player()) {
+            m_game_music.stop();
             Run_Lose_Screen();
         }
         Move_Enemies(delta_time);

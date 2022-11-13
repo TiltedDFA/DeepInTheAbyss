@@ -40,3 +40,18 @@ sf::Font& Texture_Manager::get_font(const std::string& font_name) {
 		return font;
 	}
 }
+sf::SoundBuffer& Texture_Manager::get_sound_buffer(const std::string& sound_buffer_name) {
+	auto& sound_map = m_s_instance->m_sound_buffers;
+	auto keyValuePair = sound_map.find(sound_buffer_name);
+	if (keyValuePair != sound_map.end()) {
+		return keyValuePair->second;
+	}
+	else {
+		auto& sound = sound_map[sound_buffer_name];
+		if (!sound.loadFromFile(sound_buffer_name))
+		{
+			throw std::runtime_error("FAILED TO LOAD SOUND");
+		}
+		return sound;
+	}
+}
