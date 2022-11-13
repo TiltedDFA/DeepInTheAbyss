@@ -13,6 +13,7 @@ public:
 	~Game();
 	void Spawn_Enemies(const int& amount);
 	void Move_Enemies(const sf::Time& dt);
+	bool Enemie_Collides_With_Spear(const Fish* enemie);
 	void Check_Enemie_Collision_with_spear();
 	void Draw_Enemies();
 	void Draw_Spear();

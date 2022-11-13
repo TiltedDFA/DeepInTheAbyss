@@ -10,8 +10,9 @@ void Spear::set_intial_mouse_pos(const sf::RenderWindow& window) {
 	this->m_inital_mouse_pos = sf::Mouse::getPosition(window);
 }
 void Spear::set_velocity(const sf::Vector2i& current_mouse_pos) {
-	m_velocity = { -(current_mouse_pos.x - m_inital_mouse_pos.x)*2,
-		-(current_mouse_pos.y - m_inital_mouse_pos.y)*2 };
+	m_velocity = { -(current_mouse_pos.x - m_inital_mouse_pos.x) * 2,
+		-(current_mouse_pos.y - m_inital_mouse_pos.y) * 2 };
+		
 	if (m_velocity.y == 0) return;
 	float rotation = atan(m_velocity.x / m_velocity.y) * 180 / PI;
 	if (m_velocity.y > 0) rotation += 180;
@@ -20,4 +21,7 @@ void Spear::set_velocity(const sf::Vector2i& current_mouse_pos) {
 void Spear::move(const sf::Time& time) {
 	m_sprite.setPosition({ m_sprite.getPosition().x + m_velocity.x * time.asSeconds(),
 		m_sprite.getPosition().y + m_velocity.y * time.asSeconds() });
+}
+const sf::Vector2i& Spear::get_velocity()const {
+	return m_velocity;
 }

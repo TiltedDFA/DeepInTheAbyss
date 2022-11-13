@@ -11,6 +11,7 @@ public:
 	//and old mouse pos
 	void set_velocity(const sf::Vector2i& current_mouse_pos);	
 	void move(const sf::Time& time);
+	const sf::Vector2i& get_velocity()const;
 private:
 	sf::Vector2i m_inital_mouse_pos;
 	sf::Vector2i m_velocity;

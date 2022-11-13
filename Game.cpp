@@ -29,11 +29,27 @@ void Game::Move_Enemies(const sf::Time& dt) {
         enemie->move(m_player.get_position(),dt);
     }
 }
+bool Game::Enemie_Collides_With_Spear(const Fish* enemie) {
+    /*
+      rect1.x < rect2.x + rect2.w &&
+    rect1.x + rect1.w > rect2.x &&
+    rect1.y < rect2.y + rect2.h &&
+    rect1.h + rect1.y > rect2.y
+    */
+    auto fish_pos = enemie->get_global_bounds();
+    auto spear_pos = m_spear->get_global_bounds();
+    
+    //if(fish_pos.x < spear_pos.x + )
+    return true;
+}
 void Game::Check_Enemie_Collision_with_spear() {
     if (m_spear == nullptr) return;
+    if (m_spear->get_velocity() == sf::Vector2i({ 0,0 })) return;
     for (auto i = m_enemies.begin(); i != m_enemies.end(); i++) {
         //this check does not work yet, make fish move towards player's center.
-        if ((*i)->get_global_bounds().intersects(m_spear->get_global_bounds())) {
+        Enemie_Collides_With_Spear(*i);
+        if (m_spear->get_global_bounds().intersects((*i)->get_global_bounds())) {
+            //m_spear->get_global_bounds().intersects((*i)->get_global_bounds())
             delete m_spear;
             m_spear = nullptr;
             delete (*i);

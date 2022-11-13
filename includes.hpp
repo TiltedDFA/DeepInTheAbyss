@@ -17,3 +17,5 @@ enum class Direction {
 #define PLYR_FLOAT_UP_RATE 5.0f
 #define FRICTION 5
 #define PI 3.1415926535
+#define SPEAR_WIDTH 10
+#define SPEAR_HEIGHT 30

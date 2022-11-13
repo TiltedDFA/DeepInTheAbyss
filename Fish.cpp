@@ -5,13 +5,13 @@ Fish::Fish(const int& speed, const sf::Vector2i& position)
 }
 void Fish::move(const sf::Vector2f& player_position, const sf::Time& dt) {
 	//will get fish to move towards the CENTER of the player at a given speed
-	if (player_position.x > m_sprite.getPosition().x) {
+	if (player_position.x > m_sprite.getPosition().x - PLYR_SPRITE_WIDTH/2) {
 		m_sprite.setPosition(m_sprite.getPosition().x + m_speed * dt.asSeconds(), m_sprite.getPosition().y);
 	}
 	else {
 		m_sprite.setPosition(m_sprite.getPosition().x - m_speed * dt.asSeconds(), m_sprite.getPosition().y);
 	}
-	if (player_position.y > m_sprite.getPosition().y) {
+	if (player_position.y > m_sprite.getPosition().y - PLYR_SPRITE_HEIGHT/2) {
 		m_sprite.setPosition(m_sprite.getPosition().x, m_sprite.getPosition().y + m_speed * dt.asSeconds());
 	}
 	else {
