@@ -134,6 +134,69 @@ void Game::Run_Title_Screen() {
         m_window.display();
     }
 }
+void Game::Run_Lose_Screen() {
+    while (m_window.isOpen()) {
+        sf::RectangleShape back_ground;
+        sf::Text lose_text;
+        sf::Color deeper_red(204, 0, 0);
+        sf::Color deepest_red(128, 0, 0);
+
+        back_ground.setSize({ 1000,1000 });
+        back_ground.setPosition({ 0,0 });
+        back_ground.setFillColor(sf::Color::Black);
+
+        lose_text.setFont(Texture_Manager::get_font(FONT_PATH));
+        lose_text.setFillColor(deeper_red);
+
+        lose_text.setCharacterSize(120);
+        lose_text.setOutlineColor(deepest_red);
+        lose_text.setOutlineThickness(5);
+        lose_text.setPosition({ 200,400 });
+        lose_text.setString("You Lose");
+
+        sf::Event event;
+        while (m_window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                m_window.close();
+            
+        }
+        m_window.clear();
+        m_window.draw(back_ground);
+        m_window.draw(lose_text);
+        m_window.display();
+    }
+}
+void Game::Run_Win_Screen() {
+    while (m_window.isOpen()) {
+        sf::RectangleShape back_ground;
+        sf::Text win_text;
+        //rgb(255, 204, 0)
+        sf::Color Gold(255, 204, 0);
+        sf::Color olive_green(109, 113, 46);
+        back_ground.setSize({ 1000,1000 });
+        back_ground.setPosition({ 0,0 });
+        back_ground.setFillColor(Gold);
+
+        win_text.setFont(Texture_Manager::get_font(FONT_PATH));
+        win_text.setFillColor(sf::Color::White);
+        win_text.setCharacterSize(120);
+        win_text.setOutlineColor(olive_green);
+        win_text.setOutlineThickness(5);
+        win_text.setPosition({ 200,400 });
+        win_text.setString("You Win!");
+
+        sf::Event event;
+        while (m_window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                m_window.close();
+
+        }
+        m_window.clear();
+        m_window.draw(back_ground);
+        m_window.draw(win_text);
+        m_window.display();
+    }
+}
 void Game::Run_Main_Loop() {
     while (m_window.isOpen())
     {
@@ -176,7 +239,7 @@ void Game::Run_Main_Loop() {
             m_spear->move(delta_time);
         }
         if (Enemie_Collides_With_Player()) {
-            break;
+            Run_Lose_Screen();
         }
         Move_Enemies(delta_time);
         Check_Enemie_Collision_with_spear();
@@ -192,6 +255,7 @@ void Game::Run_Main_Loop() {
     }
 }
 void Game::Run() {
+    Run_Win_Screen();
     Run_Title_Screen();
     Run_Main_Loop();
 }

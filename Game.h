@@ -21,6 +21,8 @@ public:
 	bool Is_Spear_Inbounds();
 
 	void Run_Title_Screen();
+	void Run_Lose_Screen();
+	void Run_Win_Screen();
 	void Run_Main_Loop();
 
 	void Run();
