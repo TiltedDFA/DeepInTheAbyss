@@ -12,7 +12,6 @@ void Spear::set_intial_mouse_pos(const sf::RenderWindow& window) {
 void Spear::set_velocity(const sf::Vector2i& current_mouse_pos) {
 	m_velocity = { -(current_mouse_pos.x - m_inital_mouse_pos.x) * 2,
 		-(current_mouse_pos.y - m_inital_mouse_pos.y) * 2 };
-		
 	if (m_velocity.y == 0) return;
 	float rotation = atan(m_velocity.x / m_velocity.y) * 180 / PI;
 	if (m_velocity.y > 0) rotation += 180;

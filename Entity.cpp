@@ -28,6 +28,6 @@ void Entity::set_position(const sf::Vector2f& position) {
 const sf::Vector2f& Entity::get_position()const{
 	return m_sprite.getPosition();
 }
-const sf::FloatRect& Entity::get_global_bounds()const {
+const sf::FloatRect Entity::get_global_bounds()const {
 	return m_sprite.getGlobalBounds();
 }
