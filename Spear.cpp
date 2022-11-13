@@ -17,6 +17,9 @@ void Spear::set_velocity(const sf::Vector2i& current_mouse_pos) {
 	if (m_velocity.y > 0) rotation += 180;
 	m_sprite.setRotation(-rotation);
 }
+void Spear::set_texture(const sf::Texture& texture) {
+	m_sprite.setTexture(texture);
+}
 void Spear::move(const sf::Time& time) {
 	m_sprite.setPosition({ m_sprite.getPosition().x + m_velocity.x * time.asSeconds(),
 		m_sprite.getPosition().y + m_velocity.y * time.asSeconds() });

@@ -17,6 +17,7 @@ public:
 	void Move_Enemies(const sf::Time& dt);
 	bool Enemie_Collides_With_Player();
 	void Check_Enemie_Collision_with_spear();
+	void Check_Enemie_Collision_with_spear_power();
 	void Draw_Enemies();
 	void Draw_Spear();
 	bool Is_Spear_Inbounds();
@@ -35,12 +36,15 @@ private:
 	sf::RenderWindow m_window;
 	Texture_Manager m_texture_manager{};
 	std::vector<Fish*> m_enemies;
+	Entity* m_power_up;
 	player m_player;
 	sf::Sprite m_back_ground;
 	sf::Clock m_clock;
 	sf::Clock m_game_time;
+	sf::Clock m_power_up_clock;
 	//this will be used to decided the speed of enemies
 	//depending on which stage the game is in
 	int m_num_clock_resets;
 	Spear* m_spear;
+	bool m_power_up_is_active;
 };

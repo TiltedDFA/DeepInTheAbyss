@@ -10,11 +10,18 @@ Game::Game(){
     m_game_music.setBuffer(Texture_Manager::get_sound_buffer(GAME_MUSIC_PATH));
     m_win_music.setBuffer(Texture_Manager::get_sound_buffer(WIN_MUSIC_PATH));
     m_lose_music.setBuffer(Texture_Manager::get_sound_buffer(LOSE_MUSIC_PATH));
+    m_power_up = new Entity;
+    m_power_up->init(Texture_Manager::get_texture(S_POWER_UP_PATH), {600,300});
     m_spear = nullptr;
+    m_power_up_is_active = false;
     srand(time(0));
+    sf::Image temp_icon;
+    temp_icon.loadFromFile(S_FISH_ENEMIE_PATH);
+    m_window.setIcon(temp_icon.getSize().x, temp_icon.getSize().y, temp_icon.getPixelsPtr());
 }
 Game::~Game() {
     if (m_spear != nullptr) delete m_spear;
+    if (m_power_up != nullptr) delete m_power_up;
     for (auto& i : m_enemies) {
         delete i;
     }
@@ -22,7 +29,7 @@ Game::~Game() {
 void Game::Spawn_Enemies() {
     //50% chance to spawn enemies
     if ((rand() % 2 + 1) == 1) {
-        int num_enemies_to_spawn = rand() % 4 + 1;
+        int num_enemies_to_spawn = rand() % 6 + 2;
         //decides if enemies are spawned on left or right
         if ((rand() % 2 + 1) == 1) {
             for (int i = 0; i < num_enemies_to_spawn; ++i) {
@@ -92,6 +99,17 @@ void Game::Check_Enemie_Collision_with_spear() {
             //m_spear->get_global_bounds().intersects((*i)->get_global_bounds())
             delete m_spear;
             m_spear = nullptr;
+            delete (*i);
+            m_enemies.erase(i);
+            return;
+        }
+    }
+}
+void Game::Check_Enemie_Collision_with_spear_power() {
+    if (m_spear == nullptr) return;
+    if (m_spear->get_velocity() == sf::Vector2i({ 0,0 })) return;
+    for (auto i = m_enemies.begin(); i != m_enemies.end(); i++) {
+        if (m_spear->get_global_bounds().intersects((*i)->get_global_bounds())) {
             delete (*i);
             m_enemies.erase(i);
             return;
@@ -264,6 +282,9 @@ void Game::Run_Main_Loop() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && m_spear == nullptr) {
                     m_spear = new Spear(m_player.get_position());
+                    if (m_power_up_is_active) {
+                        m_spear->set_texture(Texture_Manager::get_texture(S_P_SPEAR_PATH));
+                    }
                     m_spear->set_intial_mouse_pos(m_window);
                 }
                 else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && m_spear != nullptr) {
@@ -287,6 +308,28 @@ void Game::Run_Main_Loop() {
             delete m_spear;
             m_spear = nullptr;
         }
+        if (m_power_up != nullptr) {
+            if (m_player.get_global_bounds().intersects(m_power_up->get_global_bounds()))
+            {
+                m_power_up_is_active = true;
+                if(m_spear != nullptr) m_spear->set_texture(Texture_Manager::get_texture(S_P_SPEAR_PATH));
+                m_power_up_clock.restart();
+                delete m_power_up;
+                m_power_up = nullptr;
+            }
+        }
+        if (m_power_up_is_active && m_power_up_clock.getElapsedTime().asSeconds() > 10)
+        {
+            m_power_up_is_active = false;
+            m_spear->set_texture(Texture_Manager::get_texture(S_SPEAR_PATH));
+        }
+            
+        if (m_power_up_is_active && m_power_up_clock.getElapsedTime().asSeconds() <= 10) {
+            Check_Enemie_Collision_with_spear_power();
+        }
+        else {
+            Check_Enemie_Collision_with_spear();
+        }
         if (m_spear != nullptr) {
             m_spear->move(delta_time);
         }
@@ -305,13 +348,15 @@ void Game::Run_Main_Loop() {
             Run_Lose_Screen();
         }
         Move_Enemies(delta_time);
-        Check_Enemie_Collision_with_spear();
+
+       
         m_player.float_up(delta_time);
 
 
         m_window.clear();
         m_window.draw(m_back_ground);
-        m_player.draw(m_window);
+        if(m_power_up != nullptr) m_power_up->draw(m_window);
+        m_player.draw(m_window);        
         Draw_Enemies();
         Draw_Spear();
         m_window.display();

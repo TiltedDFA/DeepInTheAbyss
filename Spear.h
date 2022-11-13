@@ -10,6 +10,7 @@ public:
 	//uses pythag's to get distance between current mouse pos
 	//and old mouse pos
 	void set_velocity(const sf::Vector2i& current_mouse_pos);	
+	void set_texture(const sf::Texture& texture);
 	void move(const sf::Time& time);
 	const sf::Vector2i& get_velocity()const;
 private:

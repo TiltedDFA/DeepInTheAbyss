@@ -28,8 +28,10 @@ enum class Direction {
 #define PLYR_FLOAT_RATE 15.0f
 #define STAGE_ONE_RND_SPEED rand() % 20 + 5
 #define STAGE_TWO_RND_SPEED rand() % 30 + 15
-#define STAGE_THREE_RND_SPEED rand() % 50 + 25
+#define STAGE_THREE_RND_SPEED rand() % 75 + 50
 #define MENU_MUSIC_PATH "assets/menu_music.wav"
 #define GAME_MUSIC_PATH "assets/game_music.ogg"
 #define WIN_MUSIC_PATH "assets/win_music.wav"
 #define LOSE_MUSIC_PATH "assets/lose_music.ogg"
+#define S_POWER_UP_PATH "assets/power_up.png"
+#define S_P_SPEAR_PATH "assets/p_spear_sprite.png"
