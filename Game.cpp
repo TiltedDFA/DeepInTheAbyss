@@ -5,6 +5,7 @@ Game::Game(){
     m_player.init(Texture_Manager::get_texture(S_CHARACTER_PATH), {450,900});
     m_back_ground.setTexture(Texture_Manager::get_texture(S_BACK_GROUND_PATH));
     m_back_ground.setPosition({ 0,0 });
+    m_num_clock_resets = 0;
     m_spear = nullptr;
     srand(time(0));
 }
@@ -14,13 +15,55 @@ Game::~Game() {
         delete i;
     }
 }
-void Game::Spawn_Enemies(const int& amount) {
-    for (int i = 0; i < amount; ++i) {
-        int x_position = rand() % 1000 + 0;//rnd num 0-999
-        int y_position = rand() % 250 + 0 ;//rnd num 0-249
-        Fish* new_enemie = new Fish((rand()% 25 + 5),
-            sf::Vector2i(x_position, y_position));
-        m_enemies.push_back(new_enemie);
+void Game::Spawn_Enemies() {
+    //50% chance to spawn enemies
+    if ((rand() % 2 + 1) == 1) {
+        int num_enemies_to_spawn = rand() % 4 + 1;
+        //decides if enemies are spawned on left or right
+        if ((rand() % 2 + 1) == 1) {
+            for (int i = 0; i < num_enemies_to_spawn; ++i) {
+                int x_position = rand() % 200 + 0;//rnd num 0-999
+                int y_position = rand() % 1000 + 0;//rnd num 0-249
+                if (m_num_clock_resets < 20) {
+                    Fish* new_enemie = new Fish(STAGE_ONE_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+                else if (m_num_clock_resets > 20 &&
+                    m_num_clock_resets < 40) {
+                    Fish* new_enemie = new Fish(STAGE_TWO_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+                else {
+                    Fish* new_enemie = new Fish(STAGE_THREE_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < num_enemies_to_spawn; ++i) {
+                int x_position = rand() % 1000 + 800;//rnd num 0-999
+                int y_position = rand() % 1000 + 0;//rnd num 0-249
+                if (m_num_clock_resets < 20) {
+                    Fish* new_enemie = new Fish(STAGE_ONE_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+                else if (m_num_clock_resets > 20 &&
+                    m_num_clock_resets < 40) {
+                    Fish* new_enemie = new Fish(STAGE_TWO_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+                else {
+                    Fish* new_enemie = new Fish(STAGE_THREE_RND_SPEED,
+                        sf::Vector2i(x_position, y_position));
+                    m_enemies.push_back(new_enemie);
+                }
+            }
+        }
     }
 }
 void Game::Move_Enemies(const sf::Time& dt) {
@@ -167,6 +210,7 @@ void Game::Run_Lose_Screen() {
     }
 }
 void Game::Run_Win_Screen() {
+   
     while (m_window.isOpen()) {
         sf::RectangleShape back_ground;
         sf::Text win_text;
@@ -198,6 +242,7 @@ void Game::Run_Win_Screen() {
     }
 }
 void Game::Run_Main_Loop() {
+    m_game_time.restart();
     while (m_window.isOpen())
     {
         sf::Time delta_time = m_clock.restart();
@@ -228,15 +273,21 @@ void Game::Run_Main_Loop() {
             sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             m_player.move(Direction::RIGHT, delta_time);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-            Spawn_Enemies(1);
-        }
         if (!(Is_Spear_Inbounds())) {
             delete m_spear;
             m_spear = nullptr;
         }
         if (m_spear != nullptr) {
             m_spear->move(delta_time);
+        }
+        if (m_game_time.getElapsedTime().asSeconds() >= 1.0)
+        {
+            m_game_time.restart();
+            ++m_num_clock_resets;
+            Spawn_Enemies();
+        }
+        if (m_player.get_position().y <= 0) {
+            Run_Win_Screen();
         }
         if (Enemie_Collides_With_Player()) {
             Run_Lose_Screen();
@@ -255,7 +306,7 @@ void Game::Run_Main_Loop() {
     }
 }
 void Game::Run() {
-    Run_Win_Screen();
+
     Run_Title_Screen();
     Run_Main_Loop();
 }

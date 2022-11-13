@@ -12,7 +12,7 @@ class Game
 public:
 	Game();
 	~Game();
-	void Spawn_Enemies(const int& amount);
+	void Spawn_Enemies();
 	void Move_Enemies(const sf::Time& dt);
 	bool Enemie_Collides_With_Player();
 	void Check_Enemie_Collision_with_spear();
@@ -33,5 +33,9 @@ private:
 	player m_player;
 	sf::Sprite m_back_ground;
 	sf::Clock m_clock;
+	sf::Clock m_game_time;
+	//this will be used to decided the speed of enemies
+	//depending on which stage the game is in
+	int m_num_clock_resets;
 	Spear* m_spear;
 };

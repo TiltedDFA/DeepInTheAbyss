@@ -26,3 +26,6 @@ enum class Direction {
 #define SPEAR_WIDTH 10
 #define SPEAR_HEIGHT 30
 #define PLYR_FLOAT_RATE 15.0f
+#define STAGE_ONE_RND_SPEED rand() % 20 + 5
+#define STAGE_TWO_RND_SPEED rand() % 30 + 15
+#define STAGE_THREE_RND_SPEED rand() % 50 + 25
