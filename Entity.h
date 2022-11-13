@@ -13,7 +13,7 @@ public:
 
 	void set_position(const sf::Vector2f& position);
 	const sf::Vector2f& get_position()const;
-
+	const sf::FloatRect& get_global_bounds()const;
 
 protected:
 	sf::Sprite m_sprite;

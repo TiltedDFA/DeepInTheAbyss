@@ -9,18 +9,42 @@ Game::Game(){
     m_spear = nullptr;
     srand(time(0));
 }
+Game::~Game() {
+    if (m_spear != nullptr) delete m_spear;
+    for (auto& i : m_enemies) {
+        delete i;
+    }
+}
 void Game::Spawn_Enemies(const int& amount) {
     for (int i = 0; i < amount; ++i) {
         int x_position = rand() % 1000 + 0;//rnd num 0-999
         int y_position = rand() % 250 + 0 ;//rnd num 0-249
-        Entity new_enemie(Texture_Manager::get_texture(S_FISH_ENEMIE_PATH),
+        Fish* new_enemie = new Fish((rand()% 25 + 5),
             sf::Vector2i(x_position, y_position));
         m_enemies.push_back(new_enemie);
     }
 }
+void Game::Move_Enemies(const sf::Time& dt) {
+    for (auto& enemie : m_enemies) {
+        enemie->move(m_player.get_position(),dt);
+    }
+}
+void Game::Check_Enemie_Collision_with_spear() {
+    if (m_spear == nullptr) return;
+    for (auto i = m_enemies.begin(); i != m_enemies.end(); i++) {
+        //this check does not work yet, make fish move towards player's center.
+        if ((*i)->get_global_bounds().intersects(m_spear->get_global_bounds())) {
+            delete m_spear;
+            m_spear = nullptr;
+            delete (*i);
+            m_enemies.erase(i);
+            return;
+        }
+    }
+}
 void Game::Draw_Enemies() {
     for (const auto& enemie : m_enemies) {
-        enemie.draw(m_window);
+        enemie->draw(m_window);
     }
 }
 void Game::Draw_Spear() {
@@ -52,14 +76,16 @@ void Game::Run() {
                     m_spear->set_intial_mouse_pos(m_window);
                 }
             }
-            if (event.type == sf::Event::MouseButtonReleased) {
+            if (event.type == sf::Event::MouseButtonReleased && m_spear != nullptr) {
                 m_spear->set_velocity(sf::Mouse::getPosition(m_window));
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+            sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             m_player.move(Direction::LEFT,delta_time);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             m_player.move(Direction::RIGHT,delta_time);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
@@ -72,7 +98,11 @@ void Game::Run() {
         if(m_spear != nullptr) {
             m_spear->move(delta_time);
         }
-        
+        Move_Enemies(delta_time);
+        Check_Enemie_Collision_with_spear();
+
+
+
         m_window.clear();
         m_window.draw(m_back_ground);
         m_player.draw(m_window);
