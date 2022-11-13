@@ -1,9 +1,8 @@
 #include "Game.h"
 Game::Game(){
-	
 	m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "DeepInAbyss");
     m_window.setFramerateLimit(120);
-    m_player.init(Texture_Manager::get_texture(S_CHARACTER_PATH));
+    m_player.init(Texture_Manager::get_texture(S_CHARACTER_PATH), {450,900});
     m_back_ground.setTexture(Texture_Manager::get_texture(S_BACK_GROUND_PATH));
     m_back_ground.setPosition({ 0,0 });
     m_spear = nullptr;
@@ -29,25 +28,19 @@ void Game::Move_Enemies(const sf::Time& dt) {
         enemie->move(m_player.get_position(),dt);
     }
 }
-bool Game::Enemie_Collides_With_Spear(const Fish* enemie) {
-    /*
-      rect1.x < rect2.x + rect2.w &&
-    rect1.x + rect1.w > rect2.x &&
-    rect1.y < rect2.y + rect2.h &&
-    rect1.h + rect1.y > rect2.y
-    */
-    auto fish_pos = enemie->get_global_bounds();
-    auto spear_pos = m_spear->get_global_bounds();
-    
-    //if(fish_pos.x < spear_pos.x + )
-    return true;
+bool Game::Enemie_Collides_With_Player() {
+    for (const auto& i : m_enemies) {
+        if (m_player.get_global_bounds().intersects(i->get_global_bounds())) {
+            return true;
+        }
+    }
+    return false;
 }
 void Game::Check_Enemie_Collision_with_spear() {
     if (m_spear == nullptr) return;
     if (m_spear->get_velocity() == sf::Vector2i({ 0,0 })) return;
     for (auto i = m_enemies.begin(); i != m_enemies.end(); i++) {
         //this check does not work yet, make fish move towards player's center.
-        Enemie_Collides_With_Spear(*i);
         if (m_spear->get_global_bounds().intersects((*i)->get_global_bounds())) {
             //m_spear->get_global_bounds().intersects((*i)->get_global_bounds())
             delete m_spear;
@@ -77,7 +70,71 @@ bool Game::Is_Spear_Inbounds() {
     }
     return false;
 }
-void Game::Run() {
+void Game::Run_Title_Screen() {
+    
+    sf::RectangleShape back_ground;
+    sf::RectangleShape play_button;
+    sf::RectangleShape title_backing;
+    sf::Text title;
+    sf::Text play;
+    back_ground.setSize({ 1000,1000 });
+    back_ground.setPosition({ 0,0 });
+    back_ground.setFillColor(sf::Color::Cyan);
+
+    play_button.setSize({ 300,100 });
+    play_button.setPosition({ 350,500 });
+    play_button.setFillColor(sf::Color::Green);
+    play_button.setOutlineColor(sf::Color::Black);
+    play_button.setOutlineThickness(5);
+
+    title_backing.setSize({975,120});
+    title_backing.setPosition({ 5,110 });
+    title_backing.setFillColor(sf::Color::Red);
+    title_backing.setOutlineColor(sf::Color::Black);
+    title_backing.setOutlineThickness(5);
+    
+    play.setFont(Texture_Manager::get_font(FONT_PATH));
+    play.setCharacterSize(80);
+    play.setOutlineColor(sf::Color::Black);
+    play.setOutlineThickness(5);
+    play.setPosition({ 400,490 });
+    play.setString("Play");
+
+    title.setFont(Texture_Manager::get_font(FONT_PATH));
+    title.setCharacterSize(95);
+    title.setOutlineColor(sf::Color::Black);
+    title.setOutlineThickness(5);
+    title.setPosition({ 10,100 });
+    title.setString("Deep In The Abyss");
+
+    bool button_pressed = false;
+    while (m_window.isOpen()) {
+        
+        
+        sf::Event event;
+        while (m_window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                m_window.close();
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                    if (play_button.getGlobalBounds().contains(
+                        sf::Vector2f(sf::Mouse::getPosition(m_window)))) {
+                        button_pressed = true;
+                    }
+                }
+            }
+        }
+        if (button_pressed) break;
+        m_window.clear();
+        m_window.draw(back_ground);
+        m_window.draw(title_backing);
+        m_window.draw(play_button);
+        m_window.draw(play);
+        m_window.draw(title);
+        m_window.display();
+    }
+}
+void Game::Run_Main_Loop() {
     while (m_window.isOpen())
     {
         sf::Time delta_time = m_clock.restart();
@@ -91,18 +148,22 @@ void Game::Run() {
                     m_spear = new Spear(m_player.get_position());
                     m_spear->set_intial_mouse_pos(m_window);
                 }
+                else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && m_spear != nullptr) {
+                    delete m_spear;
+                    m_spear = nullptr;
+                }
             }
             if (event.type == sf::Event::MouseButtonReleased && m_spear != nullptr) {
                 m_spear->set_velocity(sf::Mouse::getPosition(m_window));
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            m_player.move(Direction::LEFT,delta_time);
+            m_player.move(Direction::LEFT, delta_time);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            m_player.move(Direction::RIGHT,delta_time);
+            m_player.move(Direction::RIGHT, delta_time);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             Spawn_Enemies(1);
@@ -111,12 +172,15 @@ void Game::Run() {
             delete m_spear;
             m_spear = nullptr;
         }
-        if(m_spear != nullptr) {
+        if (m_spear != nullptr) {
             m_spear->move(delta_time);
+        }
+        if (Enemie_Collides_With_Player()) {
+            break;
         }
         Move_Enemies(delta_time);
         Check_Enemie_Collision_with_spear();
-
+        m_player.float_up(delta_time);
 
 
         m_window.clear();
@@ -126,4 +190,8 @@ void Game::Run() {
         Draw_Spear();
         m_window.display();
     }
+}
+void Game::Run() {
+    Run_Title_Screen();
+    Run_Main_Loop();
 }

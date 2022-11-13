@@ -1,6 +1,6 @@
-
+#include "includes.hpp"
 #include "Game.h"
-int main()
+int main
 {
     Game instance;
     instance.Run();

@@ -11,6 +11,12 @@ enum class Direction {
 	LEFT = 0,
 	RIGHT
 };
+#ifdef SFML_STATIC
+#define main WinMain()
+#else
+#define main main()
+#endif // SFML_STATIC
+#define FONT_PATH "assets/OETZTYP_.ttf"
 #define PLYR_SPRITE_WIDTH 100
 #define PLYR_SPRITE_HEIGHT 100
 #define PLYR_SIDE_MOVEMENT_RATE 250.0f
@@ -19,3 +25,4 @@ enum class Direction {
 #define PI 3.1415926535
 #define SPEAR_WIDTH 10
 #define SPEAR_HEIGHT 30
+#define PLYR_FLOAT_RATE 15.0f

@@ -131,7 +131,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,6 +144,7 @@
     <ClCompile Include="Fish.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="Spear.cpp" />
     <ClCompile Include="Texture_Manager.cpp" />
   </ItemGroup>
@@ -152,6 +153,7 @@
     <ClInclude Include="Fish.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="includes.hpp" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="Spear.h" />
     <ClInclude Include="Texture_Manager.hpp" />
   </ItemGroup>
